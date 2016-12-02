@@ -27,8 +27,6 @@ def start():
                 break
             break
 
-    print("/start placeholder/")
-
 def welcome_menu():
     made_choice = False
     print("Welcome to Peeler!",
