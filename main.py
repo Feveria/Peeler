@@ -1,5 +1,5 @@
 # Peeler - the scenemusic.net database rip engine.
-# ©2016 Artur Szczesniak
+# ©2016 Artur Szcześniak
 
 import requests
 import time
