@@ -5,6 +5,10 @@ import requests
 import time
 import threading
 
+def html_replace(unfixed):
+    fixed = unfixed.replace("&#39;", "'").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
+    return fixed
+
 def start():
     nectarine_url = "http://www.scenemusic.net/demovibes/xml/song/"
     songsdir = "songs"
@@ -17,7 +21,7 @@ def start():
                 response.raise_for_status()
                 print("Current song: {}".format(song_number))
                 with open(songsdir + "/" + str(song_number) + ".xml", "w+") as xml_file:
-                    xml_file.write(response.text.replace("&#39;","\'").replace("&lt;","\<").replace("&gt;","\>"))
+                    xml_file.write(html_replace(response.text))
             except requests.ConnectionError as e:
                 print("Connection error: \"{}(...)\", retrying in 5s...".format(str(e.args)[0:50]))
                 time.sleep(5)
