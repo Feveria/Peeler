@@ -1,35 +1,21 @@
 # Peeler - the scenemusic.net database rip engine.
 # ©2016 Artur Szcześniak
 
-import requests
-import time
-import threading
 
-def html_replace(unfixed):
-    fixed = unfixed.replace("&#39;", "'").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
-    return fixed
 
-def start():
+
+
+def main():
+    import blade
     nectarine_url = "http://www.scenemusic.net/demovibes/xml/song/"
     songsdir = "songs"
     songstart = 1
-    songend = 44000
-    for song_number in range(songstart, songend):
-        while True:
-            try:
-                response = requests.get(nectarine_url + str(song_number))
-                response.raise_for_status()
-                print("Current song: {}".format(song_number))
-                with open(songsdir + "/" + str(song_number) + ".xml", "w+") as xml_file:
-                    xml_file.write(html_replace(response.text))
-            except requests.ConnectionError as e:
-                print("Connection error: \"{}(...)\", retrying in 5s...".format(str(e.args)[0:50]))
-                time.sleep(5)
-                continue
-            except requests.HTTPError as he:
-                print("HTTP error: \"{}(...)\", skipping song {}.".format(str(he.args)[0:50], song_number))
-                break
-            break
+    songend = 1000
+    for spawn_number in range(songstart, songend):
+        razor = blade.Blade(spawn_number, songstart, songend, nectarine_url, songsdir)
+        razor.start()
+
+
 
 def welcome_menu():
     made_choice = False
@@ -39,13 +25,14 @@ def welcome_menu():
         choice = input()
         if choice in ("y", "Y", "yes", "ye"):
             made_choice = True
-            start()
+            main()
         elif choice in ("n", "N", "no"):
             made_choice = True
             print("Bye!")
             exit()
         else:
             print("Please type \"y\" or \"n\".")
+
 
 if __name__ == "__main__":
     welcome_menu()
