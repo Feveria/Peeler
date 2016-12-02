@@ -34,6 +34,13 @@ class Blade(threading.Thread):
                     continue
                 except requests.HTTPError as he:
                     #print("HTTP error: \"{}(...)\", skipping song {}.".format(str(he.args)[0:50], self.song_number))
-                    print(he)
+                    if str(he)[0:3] == "503":
+                        wait_time = random.randrange(0, 10)
+                        print("{}: Received 503, retrying in {}...".format(self.song_number, wait_time))
+                        time.sleep(wait_time)
+                        continue
+                    if str(he)[0:3] == "404":
+                        print("Received 404, skipping song {}.".format(self.song_number))
+                        break
                     break
                 break
