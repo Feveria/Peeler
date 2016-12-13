@@ -52,7 +52,7 @@ class Blade(threading.Thread):
                 if str(he)[0:3] == "503":
                     wait_time = random.randrange(0, 30)
                     # print("{}: Received 503, retrying in {}...".format(self.song_number, wait_time))
-                    self.log.logerror("{}: Received 503, retrying in {}...".format(self.song_number, wait_time))
+                    self.log.logerror("{}: Received 503, retrying in {}s...".format(self.song_number, wait_time))
                     time.sleep(wait_time)
                     continue
                 if str(he)[0:3] == "404":
