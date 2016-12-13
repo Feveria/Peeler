@@ -3,9 +3,11 @@
 
 import blade
 import juicelog as jl
+import os
 
 
 def main():
+    os.system("cls")
     nectarine_url = "http://www.scenemusic.net/demovibes/xml/song/"
     songsdir = "songs"
     songstart = 1
@@ -17,8 +19,8 @@ def main():
         razor.start()
 
 
-
 def welcome_menu():
+    os.system("cls")
     made_choice = False
     print("Welcome to Peeler!",
           "Do you want to start this script? (y/n)\n")
@@ -29,10 +31,11 @@ def welcome_menu():
             main()
         elif choice in ("n", "N", "no"):
             made_choice = True
+            os.system("cls")
             print("Bye!")
             exit()
         else:
-            print("Please type \"y\" or \"n\".")
+            print("\nPlease type \"y\" or \"n\".")
 
 
 if __name__ == "__main__":
