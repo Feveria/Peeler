@@ -5,9 +5,6 @@ import blade
 import juicelog as jl
 
 
-
-
-
 def main():
     nectarine_url = "http://www.scenemusic.net/demovibes/xml/song/"
     songsdir = "songs"
@@ -15,7 +12,7 @@ def main():
     songend = 43602
     l = jl.Juicelog()
     l.logstart()
-    for spawn_number in range(songstart, songend+1):
+    for spawn_number in range(songstart, songend + 1):
         razor = blade.Blade(spawn_number, songstart, songend, nectarine_url, songsdir)
         razor.start()
 
