@@ -6,6 +6,7 @@ import requests
 import time
 import random
 import juicelog as jl
+import os.path as op
 
 
 class Blade(threading.Thread):
@@ -23,16 +24,20 @@ class Blade(threading.Thread):
         return fixed
 
     def run(self):
-        self.songsripped = 0
         while True:
             try:
                 response = requests.get(self.url + str(self.song_number))
                 response.raise_for_status()
-                print("Songs ripped: {} of {}".format(self.songsripped, self.songend), end="\r")
                 self.log.logsong(self.song_number)
-                with open(self.songsdir + "/" + str(self.song_number) + ".xml", "w+") as xml_file:
-                    xml_file.write(self.html_replace(response.text))
-                self.songsripped += 1
+                if op.isfile(self.songsdir + "/" + str(self.song_number) + ".xml"):
+                    self.log.logerror("{}: file exists, skipping.".format(self.song_number))
+                    break
+                else:
+                    with open(self.songsdir + "/" + str(self.song_number) + ".xml", "w+") as xml_file:
+                        xml_file.write(self.html_replace(response.text))
+                    print("Ripped song: {}                                         ".format(self.song_number), end="\r")
+
+                    break
             except requests.ConnectionError as e:
                 #print("Connection error: \"{}(...)\", retrying in 5s...".format(str(e.args)[0:50]), end="\r")
                 self.log.logerror("Connection error: \"{}(...)\", retrying in 5s...".format(str(e.args)[0:50]))
@@ -49,5 +54,5 @@ class Blade(threading.Thread):
                 if str(he)[0:3] == "404":
                     print("Received 404, skipping song {}.".format(self.song_number))
                     break
-                break
-            break
+
+
