@@ -1,22 +1,36 @@
 # Peeler - the scenemusic.net database rip engine.
-# ©2016 Artur Szcześniak
+# ©2017 Artur Szcześniak
 
 import blade
-import juicelog as jl
 import os
+import requests
+import multiprocessing
 
+cpucont = multiprocessing.cpu_count()
+
+def checksong():
+    pass
 
 def main():
     os.system("cls")
+    print("Logical cores found: {}".format(cpucont))
     nectarine_url = "http://www.scenemusic.net/demovibes/xml/song/"
     songsdir = "songs"
-    songstart = 1
-    songend = 43602
-    l = jl.Juicelog()
-    l.logstart()
-    for spawn_number in range(songstart, songend + 1):
-        razor = blade.Blade(spawn_number, songstart, songend, nectarine_url, songsdir)
-        razor.start()
+    songchecknumber = 0
+    consecutive404 = 0
+    songsnumberlist = []
+    while consecutive404 < 10:
+        response = requests.get(nectarine_url + str(songchecknumber))
+        print("Checking song no. {} ....\r".format(songchecknumber))
+        if response.status_code == 404:
+            consecutive404 += 1
+            songchecknumber += 1
+        else:
+            songchecknumber += 1
+            songsnumberlist.append(songchecknumber)
+    print("Reached 10 consecutive 404's.")
+
+
 
 
 def welcome_menu():
