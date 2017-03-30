@@ -2,35 +2,64 @@
 # ©2017 Artur Szcześniak
 
 import blade
+import threading
 import os
-import requests
-import multiprocessing
+import urllib.request as req
+import urllib.error as urlerr
+import queue
+from multiprocessing import cpu_count
 
-cpucont = multiprocessing.cpu_count()
+nectarine_url = "http://www.scenemusic.net/demovibes/xml/song/"
+cpucount = cpu_count()
+songsnumberlist = []
 
-def checksong():
-    pass
+
+class CheckWorker(threading.Thread):
+    """Class that defines thread worker for performsongcheck function"""
+
+    def __init__(self, songchecknumber, queue):
+        self.songchecknumber = songchecknumber
+        super().__init__()
+        self.queue = queue
+
+    def run(self):
+        try:
+            response = req.urlopen(nectarine_url + str(self.songchecknumber))
+            print("Checking song no. {} ....\r".format(self.songchecknumber))
+            songsnumberlist.append(self.songchecknumber)
+        except urlerr.HTTPError as e:
+            print("Song: {} Error: {}\r".format(self.songchecknumber, e.code))
+            self.queue.put(0)
+
+
+def getsonglist():
+    """Function that allows to check which songs are available"""
+    currentsong = 0
+    threads = []
+    kolejka = queue.Queue()
+    while True:
+        for x in range(currentsong, currentsong + cpucount):
+            t = CheckWorker(x, kolejka)
+            threads.append(t)
+
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        if kolejka.qsize() >= cpucount:
+            break
+        else:
+            currentsong += cpucount
+            threads = []
+            while not kolejka.empty():
+                kolejka.get()
+    print(songsnumberlist)
+
 
 def main():
     os.system("cls")
-    print("Logical cores found: {}".format(cpucont))
-    nectarine_url = "http://www.scenemusic.net/demovibes/xml/song/"
     songsdir = "songs"
-    songchecknumber = 0
-    consecutive404 = 0
-    songsnumberlist = []
-    while consecutive404 < 10:
-        response = requests.get(nectarine_url + str(songchecknumber))
-        print("Checking song no. {} ....\r".format(songchecknumber))
-        if response.status_code == 404:
-            consecutive404 += 1
-            songchecknumber += 1
-        else:
-            songchecknumber += 1
-            songsnumberlist.append(songchecknumber)
-    print("Reached 10 consecutive 404's.")
-
-
+    getsonglist()
 
 
 def welcome_menu():
