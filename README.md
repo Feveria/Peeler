@@ -6,5 +6,3 @@ Requires requests package. To install it type in command line:
 
 `pip install requests`
 
----
-Project abandoned.
